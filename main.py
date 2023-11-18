@@ -1,9 +1,10 @@
 #General Libraries
-import numpy
+import numpy as np
 import pyautogui
 import time
 import mss
 from matplotlib import pyplot as plt
+import os
 
 #Image Processing Libraries
 from PIL import Image
@@ -34,17 +35,29 @@ with mss.mss() as sct:
     monitorBounds = {"top": 0, "left": 0, "width": dimensions[0] , "height": dimensions[1]}
     syllableBounds = {"top": round(dimensions[0] / 3.15), "left": round(dimensions[1] / 1.64), "width": 75, "height": 75}
 
+    mainDirectory = os.path.dirname(os.path.abspath(__file__))
+
+    screenshots = dataSet = mainDirectory + "\\tianModel\\tianDatasets\\typedData\\syllables"
+    increment = 1
+
     while "Screen capturing":
         last_time = time.time()
 
         # Get raw pixels from the screen, save it to a Numpy array
-        syllableCapture = numpy.array(sct.grab(syllableBounds))
+        syllableCapture = np.array(sct.grab(syllableBounds))
 
         # Display the pictures
         cv2.imshow("Syllable Capture", imageProcessing(syllableCapture, True))
         print(f"fps: {1 / (time.time() - last_time)}")
 
         # Press "q" to quit
+
+        if cv2.waitKey(25) & 0xFF == ord("r"):
+            print("screenshotting")
+            cv2.imwrite(screenshots + f"\\img{increment}.png", imageProcessing(syllableCapture, True))
+            increment += 1
+            
+
         if cv2.waitKey(25) & 0xFF == ord("q"):
             cv2.destroyAllWindows()
             break
